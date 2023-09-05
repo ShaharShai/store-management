@@ -12,11 +12,35 @@ function Purchases() {
     customer: "",
     date: "",
   });
+
+  const [initialPurchases, setInitialPurchases] = useState([]);
   const [purchasesToPresent, setPurchasesToPresent] = useState([]);
+
+  const newFilter = () => {
+    purchases.forEach((purchase) => {
+      const customer = customers.find(
+        (customer) => customer.id === purchase.customerId
+      );
+
+      const product = products.find(
+        (product) => product.id === purchase.productId
+      );
+
+      if (customer && product) {
+        currentPurchases.push({
+          customer: `${customer.firstname} ${customer.lastname}`,
+          product: product.name,
+          date: purchase.date,
+        });
+      }
+    });
+
+    setPurchasesToPresent([...currentPurchases]);
+    setInitialPurchases([...currentPurchases]);
+  };
 
   useEffect(() => {
     let currentPurchases = [];
-
 
     if (
       searchData.customer === "" &&
@@ -28,38 +52,88 @@ function Purchases() {
           (customer) => customer.id === purchase.customerId
         );
 
-        
         const product = products.find(
           (product) => product.id === purchase.productId
         );
 
         if (customer && product) {
-          currentPurchases[purchase.id] = {
+          currentPurchases.push({
             customer: `${customer.firstname} ${customer.lastname}`,
             product: product.name,
             date: purchase.date,
-          };
+          });
         }
       });
 
-      setPurchasesToPresent(currentPurchases);
+      setPurchasesToPresent([...currentPurchases]);
+      setInitialPurchases([...currentPurchases]);
+    } else {
+      if (searchData.customer !== "") {
+        setPurchasesToPresent([...initialPurchases]);
+
+        let filteredArray = initialPurchases.filter(
+          (purchase) => purchase.customer === searchData.customer
+        );
+
+        setPurchasesToPresent([...filteredArray]);
+
+
+      }
+         
+      if(searchData.product !== "") {
+        setPurchasesToPresent([...initialPurchases]);
+
+        let filteredArray = initialPurchases.filter(
+          (purchase) => purchase.product === searchData.product
+        );
+
+        setPurchasesToPresent([...filteredArray]);
+
+     
+      }
+
+      if(searchData.date !== "") {
+        setPurchasesToPresent([...initialPurchases]);
+
+        let filteredArray = initialPurchases.filter(
+          (purchase) => purchase.date === searchData.date
+        );
+
+        setPurchasesToPresent([...filteredArray]);
+
+    
+      }
+
     }
-   
- 
     
-    
+
     console.log(purchasesToPresent);
     console.log(currentPurchases);
   }, [searchData, purchases]);
 
   const searchDatahandler = (e) => {
     const { name, value } = e.target;
-    setSearchData((prevSearchData) => ({
-      ...prevSearchData,
-      [name]: value === "all" ? "" : value,
-    }));
+  
 
+    if (name === 'date') {
    
+      const inputDate = new Date(value);
+      const dd = String(inputDate.getDate()).padStart(2, '0');
+      const mm = String(inputDate.getMonth() + 1).padStart(2, '0');
+      const yyyy = inputDate.getFullYear();
+      const formattedDate = `${dd}/${mm}/${yyyy}`;
+  
+
+      setSearchData((prevSearchData) => ({
+        ...prevSearchData,
+        [name]: formattedDate,
+      }));
+    } else {
+      setSearchData((prevSearchData) => ({
+        ...prevSearchData,
+        [name]: value === "all" ? "" : value,
+      }));
+    }
   };
 
   return (
@@ -121,19 +195,16 @@ function Purchases() {
       {/* <div className="text-3xl text-center">
        <h1>{searchData.customer}</h1> - <h1>{searchData.product}</h1> - <h1>{searchData.date}</h1>
        </div> */}
-      <div className="text-center">
+      {/* <div className="text-center">
         {purchasesToPresent.map((p) => (
           <div key={p}>{p.customer}</div>
         ))}
-      </div>
+      </div> */}
 
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="bg-blue-100 border-b bg-neutral-800 font-medium text-black dark:border-neutral-500 dark:bg-neutral-900">
             <tr>
-              <th scope="col" className="px-6 py-3">
-                <span>Image</span>
-              </th>
               <th scope="col" className="px-6 py-3">
                 <span>Name</span>
               </th>
@@ -146,28 +217,14 @@ function Purchases() {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(purchasesToPresent).map((purchaseId) => {
-              const purchase = purchasesToPresent[purchaseId];
+            {purchasesToPresent.map((purchase, index) => {
               return (
                 <tr
-                  key={purchaseId}
+                  key={index}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
-                  <td className="w-32 p-4">
-                    <img
-                      className="rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30"
-                      src={
-                        purchase.customer.image
-                          ? purchase.customer.image
-                          : "https://nayemdevs.com/wp-content/uploads/2020/03/default-product-image.png"
-                      }
-                      alt={purchase.customer.name}
-                    />
-                  </td>
                   <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
-                    <Link to={`/edit-product/${purchase.customer.id}`}>
-                      <h3 className="font-bold">{purchase.customer}</h3>
-                    </Link>
+                    <h3 className="font-bold">{purchase.customer}</h3>
                   </td>
                   <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
                     <h3>{purchase.product}</h3>

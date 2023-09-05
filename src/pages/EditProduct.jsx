@@ -59,7 +59,7 @@ function EditProduct() {
   // };
 
   if (!product) {
-    return <div>Loading...</div>;
+    return <div className="parent-container"><span class="loader"></span></div>;
   }
 
   return (

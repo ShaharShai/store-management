@@ -37,7 +37,7 @@ function EditCustomer() {
   }, [id]);
 
   if (!customer) {
-    return <div>Loading...</div>;
+    return <div className="parent-container"><span class="loader"></span></div>;
   }
 
   return (
