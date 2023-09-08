@@ -31,7 +31,6 @@ const reducer = (state = initialState, action) => {
         ...state,
         purchases: [...state.purchases, action.payload],
         products: updatedProducts,
-        // products: [...state.products, products[action.payload.productId].amount: products[action.payload.productId].amount - 1]
       };
     }
 

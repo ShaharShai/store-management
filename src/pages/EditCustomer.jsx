@@ -16,7 +16,6 @@ function EditCustomer() {
       const currentCustomer = await getElementById("customers", id);
       setCustomer({ ...currentCustomer.data(), id: currentCustomer.id });
 
-      // setCustomerPurchases(purchases.filter(p => p.customerId == currentCustomer.id))
       const customerPurchasesCopy = customerPurchases;
       purchases.forEach((purchase) => {
         products.forEach((product) => {

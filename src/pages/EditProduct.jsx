@@ -13,11 +13,11 @@ function EditProduct() {
   const purchases = useSelector((state) => state.purchases);
 
   const [productCustomers, setProductCustomers] = useState();
-  //   const product = getElementById("products", "8WTLTeHCD9qUk6DdP1FX")
+
 
   const location = useLocation();
 
-  // const productCustomers = location.state;
+
 
   const dispatch = useDispatch();
   const products = useSelector((state) => state.products);
@@ -50,13 +50,6 @@ function EditProduct() {
     handler();
   }, [id]);
 
-  // const editHandler = (e) => {
-  //   const { name, value } = e.target;
-  //   setEditedProduct((prevEditedProduct) => ({
-  //     ...prevEditedProduct,
-  //     [name]: value,
-  //   }));
-  // };
 
   if (!product) {
     return <div className="parent-container"><span class="loader"></span></div>;

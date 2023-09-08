@@ -35,35 +35,8 @@ function AddProductsToCustomer({ customer }) {
         const ref = doc(db, 'products', product.id);
         await setDoc(ref, {...product, quantity: product.quantity - 1})
 
-        // await updateDoc(productsCollectionRef, product.id, {
-        //   ...product,
-        //   quantity: 5,
-        // });
-        
-
-        // const updateData = {
-        //   quantity: product.quantity-1,
-        // };
-  
-        // await updateDoc(productsCollectionRef.doc(product.id), updateData);
-
 
         await addDoc(purchasesCollectionRef, purchaseData);
-
-        // const updateData = {
-        //   quantity: product.quantity - 1,
-        // };
-
-        // //  await updateDoc(productsCollectionRef, product.id, updateData);
-        //    await productsCollectionRef.doc(product.id).update(updateData);
-
-        // await db.collection('products').doc(product.id).update({
-        //   quantity: product.quantity - 1
-        //  }).then(() => {
-        //   console.log('Updated product');
-        //  }).catch(() => {
-        //   console.log('Failed to update product')
-        //  })
 
         dispatch({
           type: "SAVE",

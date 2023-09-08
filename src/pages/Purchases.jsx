@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 
 function Purchases() {
-  const purchases = useSelector((state) => state.purchases);
-  const products = useSelector((state) => state.products);
-  const customers = useSelector((state) => state.customers);
+  const {
+    purchases,
+    products,
+    customers,
+  } = useSelector((state) => state);
 
   const [searchData, setSearchData] = useState({
     product: "",
@@ -16,27 +17,29 @@ function Purchases() {
   const [initialPurchases, setInitialPurchases] = useState([]);
   const [purchasesToPresent, setPurchasesToPresent] = useState([]);
 
-  const newFilter = () => {
-    purchases.forEach((purchase) => {
-      const customer = customers.find(
-        (customer) => customer.id === purchase.customerId
+
+  const filterPurchases = () => {
+    let filteredArray = [...initialPurchases];
+  
+    if (searchData.customer !== "") {
+      filteredArray = filteredArray.filter(
+        (purchase) => purchase.customer === searchData.customer
       );
-
-      const product = products.find(
-        (product) => product.id === purchase.productId
+    }
+  
+    if (searchData.product !== "") {
+      filteredArray = filteredArray.filter(
+        (purchase) => purchase.product === searchData.product
       );
-
-      if (customer && product) {
-        currentPurchases.push({
-          customer: `${customer.firstname} ${customer.lastname}`,
-          product: product.name,
-          date: purchase.date,
-        });
-      }
-    });
-
-    setPurchasesToPresent([...currentPurchases]);
-    setInitialPurchases([...currentPurchases]);
+    }
+  
+    if (searchData.date !== "") {
+      filteredArray = filteredArray.filter(
+        (purchase) => purchase.date === searchData.date
+      );
+    }
+  
+    setPurchasesToPresent(filteredArray);
   };
 
   useEffect(() => {
@@ -68,48 +71,15 @@ function Purchases() {
       setPurchasesToPresent([...currentPurchases]);
       setInitialPurchases([...currentPurchases]);
     } else {
-      if (searchData.customer !== "") {
-        setPurchasesToPresent([...initialPurchases]);
 
-        let filteredArray = initialPurchases.filter(
-          (purchase) => purchase.customer === searchData.customer
-        );
-
-        setPurchasesToPresent([...filteredArray]);
-
-
-      }
-         
-      if(searchData.product !== "") {
-        setPurchasesToPresent([...initialPurchases]);
-
-        let filteredArray = initialPurchases.filter(
-          (purchase) => purchase.product === searchData.product
-        );
-
-        setPurchasesToPresent([...filteredArray]);
-
-     
-      }
-
-      if(searchData.date !== "") {
-        setPurchasesToPresent([...initialPurchases]);
-
-        let filteredArray = initialPurchases.filter(
-          (purchase) => purchase.date === searchData.date
-        );
-
-        setPurchasesToPresent([...filteredArray]);
-
-    
-      }
-
+      filterPurchases()
     }
     
 
     console.log(purchasesToPresent);
     console.log(currentPurchases);
   }, [searchData, purchases]);
+
 
   const searchDatahandler = (e) => {
     const { name, value } = e.target;
@@ -188,18 +158,8 @@ function Purchases() {
           id="date"
         />
         <br /> <br />
-        <button className="px-4 mt-1 py-1 text-sm text-white bg-blue-400 font-bold rounded-full border border-blue-600 hover:text-blue-600 hover:bg-white hover:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-800 focus:ring-offset-2">
-          Search
-        </button>
+
       </div>
-      {/* <div className="text-3xl text-center">
-       <h1>{searchData.customer}</h1> - <h1>{searchData.product}</h1> - <h1>{searchData.date}</h1>
-       </div> */}
-      {/* <div className="text-center">
-        {purchasesToPresent.map((p) => (
-          <div key={p}>{p.customer}</div>
-        ))}
-      </div> */}
 
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -217,10 +177,16 @@ function Purchases() {
             </tr>
           </thead>
           <tbody>
-            {purchasesToPresent.map((purchase, index) => {
+            {
+             purchasesToPresent.length === 0 ? (
+              <tr>
+                <td colSpan="3">No Purchases Found</td>
+              </tr>
+            ) :
+            purchasesToPresent.map((purchase) => {
               return (
                 <tr
-                  key={index}
+                  key={purchase.id}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
                   <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
@@ -234,7 +200,8 @@ function Purchases() {
                   </td>
                 </tr>
               );
-            })}
+            })
+            }
           </tbody>
         </table>
       </div>
